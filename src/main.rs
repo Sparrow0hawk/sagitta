@@ -1,3 +1,5 @@
+use sagitta::LogFile;
+
 struct Args {
     file: String,
 }
@@ -27,8 +29,9 @@ fn parse_args() -> Result<Args, lexopt::Error> {
 
 fn main() -> Result<(), lexopt::Error> {
     let args = parse_args()?;
-    let mut message = format!("Hello {}", args.file);
 
-    println!("{}", message);
+    let parser = LogFile::new(&args.file);
+
+    println!("{:?}", parser);
     Ok(())
 }
