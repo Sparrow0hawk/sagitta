@@ -1,4 +1,5 @@
-use sagitta::LogFile;
+use sagitta::{read_file, LogFile};
+use std::io::BufRead;
 
 struct Args {
     file: String,
@@ -30,8 +31,17 @@ fn parse_args() -> Result<Args, lexopt::Error> {
 fn main() -> Result<(), lexopt::Error> {
     let args = parse_args()?;
 
-    let parser = LogFile::new(&args.file);
+    let open_file = read_file(&args.file).unwrap_or_else(|e| panic!("Error opening file: {e}"));
 
-    println!("{:?}", parser);
+    let _ = open_file
+        .lines()
+        .map(|x| {
+            let x = x.unwrap();
+            println!("{:?}", x);
+            x
+        })
+        .collect::<String>();
+
+    //println!("{:?}", parser);
     Ok(())
 }
