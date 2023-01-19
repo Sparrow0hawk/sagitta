@@ -1,4 +1,4 @@
-use sagitta::{read_file, LogFile};
+use sagitta::{read_file, JobInfo};
 use std::io::BufRead;
 
 struct Args {
@@ -35,12 +35,12 @@ fn main() -> Result<(), lexopt::Error> {
 
     let _ = open_file
         .lines()
+        .skip(4)
         .map(|x| {
             let x = x.unwrap();
-            println!("{:?}", x);
-            x
+            println!("{:?}", JobInfo::new(x.split(":").collect::<Vec<&str>>()));
         })
-        .collect::<String>();
+        .collect::<()>();
 
     //println!("{:?}", parser);
     Ok(())
