@@ -3,11 +3,6 @@ use std::{fmt, fs::File, io, path::Path};
 use chrono::NaiveDateTime;
 
 #[derive(Debug)]
-pub struct LogFile {
-    path: String,
-}
-
-#[derive(Debug)]
 pub struct JobInfo {
     qname: String,
     hostname: String,
@@ -206,14 +201,6 @@ impl JobInfo {
             maxvmem: f[42].parse().unwrap(),
             arid: f[43].parse().unwrap(),
             ar_submission_time: f[44].parse().unwrap(),
-        }
-    }
-}
-
-impl LogFile {
-    pub fn new(f: &str) -> LogFile {
-        LogFile {
-            path: f.to_string(),
         }
     }
 }
