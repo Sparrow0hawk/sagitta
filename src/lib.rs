@@ -1,4 +1,4 @@
-use std::{fs::File, io, path::Path};
+use std::{fmt, fs::File, io, path::Path};
 
 use chrono::NaiveDateTime;
 
@@ -54,6 +54,107 @@ pub struct JobInfo {
     maxvmem: f64,
     arid: f64,
     ar_submission_time: i32,
+}
+
+impl fmt::Display for JobInfo {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            r#"
+Queue name:                      {}
+Hostname:                        {}
+Group:                           {}
+Job Owner:                       {}
+Job Name:                        {}
+Job Number:                      {}
+Account:                         {}
+Job priority:                    {}
+Submission Time:                 {}
+Job Start Time:                  {}
+Job End Time:                    {}
+Failed status:                   {}
+Exit status:                     {}
+Wallclock Time:                  {}
+User CPU Time:                   {}
+System CPU Time:                 {}
+Maximum resident shared set:     {}
+Integral shared memory size:     {}
+ru_ismrss:                       {}
+Integral unshared data size:     {}
+Integral unshared stack size:    {}
+Page reclaims:                   {}
+Page faults:                     {}
+Swaps:                           {}
+Block input operations:          {}
+Block output operations:         {}
+IPC messages sent:               {}
+IPC messages received:           {}
+Signals received:                {}
+Voluntary context switches:      {}
+Involuntary context switches:    {}
+Project:                         {}
+Department:                      {}
+Granted parallel environment:    {}
+Slots (cores):                   {}
+Task number:                     {}
+CPU Time usage (s):              {}
+Integral memory use              {}
+(Gbytes/cpu sec)
+Input/Output operations:         {}
+Job Category:                    {}
+Input/Output wait time (s):      {}
+Identifier for parallel job:     {}
+Max Virtual memory size (bytes): {}
+Advanced reservation ID:         {}
+Advanced reservation             {}
+submission time:                         "#,
+            self.qname,
+            self.hostname,
+            self.group,
+            self.owner,
+            self.job_name,
+            self.job_number,
+            self.account,
+            self.priority,
+            self.submission_time,
+            self.start_time,
+            self.end_time,
+            self.failed,
+            self.exit_status,
+            self.ru_wallclock,
+            self.ru_utime,
+            self.ru_stime,
+            self.ru_maxrss,
+            self.ru_ixrss,
+            self.ru_ismrss,
+            self.ru_idrss,
+            self.ru_isrss,
+            self.ru_minflt,
+            self.ru_majflt,
+            self.ru_nswap,
+            self.ru_inblock,
+            self.ru_oublock,
+            self.ru_msgsnd,
+            self.ru_msgrcv,
+            self.ru_nsignals,
+            self.ru_nvcsw,
+            self.ru_nivcsw,
+            self.project,
+            self.department,
+            self.granted_pe,
+            self.slots,
+            self.task_number,
+            self.cpu,
+            self.mem,
+            self.io,
+            self.category,
+            self.iow,
+            self.pe_taskid,
+            self.maxvmem,
+            self.arid,
+            self.ar_submission_time,
+        )
+    }
 }
 
 impl JobInfo {

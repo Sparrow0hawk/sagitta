@@ -47,7 +47,7 @@ fn main() -> Result<(), lexopt::Error> {
         .collect::<String>();
 
     if line.len() > 0 {
-        println!("{:?}", JobInfo::new(line.split(":").collect::<Vec<&str>>()));
+        println!("{}", JobInfo::new(line.split(":").collect::<Vec<&str>>()));
     } else {
         println!("No job with ID {}", args.job_id);
     }
