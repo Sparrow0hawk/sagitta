@@ -1,6 +1,21 @@
+use anyhow;
+use std::io::BufRead;
 use std::{fmt, fs::File, io, path::Path};
 
 use chrono::NaiveDateTime;
+
+pub fn find_line(f: String, id: i32) -> Result<String, anyhow::Error> {
+    let open_file = read_file(&f)?;
+
+    let line: String = open_file
+        .lines()
+        .skip(4)
+        .map(|l| l.unwrap())
+        .filter(|x| x.split(":").nth(5).unwrap().parse::<i32>().unwrap().eq(&id))
+        .collect();
+
+    Ok(line)
+}
 
 #[derive(Debug)]
 pub struct JobInfo {
