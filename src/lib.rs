@@ -227,3 +227,34 @@ where
     let file = File::open(filename)?;
     Ok(io::BufReader::new(file))
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::io::Write;
+    use tempfile::NamedTempFile;
+
+    #[test]
+    fn test_read_line() {
+        let mut file = NamedTempFile::new().unwrap();
+        writeln!(file, "40core-192G.q:d12s6b3.arc4.leeds.ac.uk:iss:issmcd:openmpi.40:101:sge:0:1564497817:1564497821:1564497823:0:1:2:0.132815:0.240530:18036.000000:0:0:0:0:43625:111:0:151480.000000:760:0:0:0:2061:206:ARC:defaultdepartment:ib-edr-part-1:80:0:0.373345:0.000000:0.000477:-l env=centos7,exclusive=true,h_rt=600,h_vmem=5153960755,node_type=40core-192G -pe ib-edr-part-* 80:0.000000:NONE:3702784.000000:0:0\n40core-192G.q:d12s4b2.arc4.leeds.ac.uk:iss:issmcd:openmpi.37:98:sge:0:1564497817:1564497821:1564497823:0:1:2:0.140881:0.236862:18040.000000:0:0:0:0:43632:111:0:151480.000000:760:0:0:0:2089:206:ARC:defaultdepartment:ib-edr-part-1:80:0:0.377743:0.000008:0.000477:-l env=centos7,exclusive=true,h_rt=600,h_vmem=5153960755,node_type=40core-192G -pe ib-edr-part-* 80:0.000000:NONE:3690496.000000:0:0\n40core-192G.q:d10s2b2.arc4.leeds.ac.uk:iss:issmcd:openmpi.5:66:sge:0:1564497811:1564497822:1564497823:0:1:1:0.122607:0.233584:18044.000000:0:0:0:0:43742:2:0:64.000000:752:0:0:0:1897:200:ARC:defaultdepartment:ib-edr-part-1:80:0:0.356191:0.000008:0.000477:-l env=centos7,exclusive=true,h_rt=600,h_vmem=5153960755,node_type=40core-192G -pe ib-edr-part-* 80:0.000000:NONE:3690496.000000:0:0").unwrap();
+
+        let right_line = "40core-192G.q:d10s2b2.arc4.leeds.ac.uk:iss:issmcd:openmpi.5:66:sge:0:1564497811:1564497822:1564497823:0:1:1:0.122607:0.233584:18044.000000:0:0:0:0:43742:2:0:64.000000:752:0:0:0:1897:200:ARC:defaultdepartment:ib-edr-part-1:80:0:0.356191:0.000008:0.000477:-l env=centos7,exclusive=true,h_rt=600,h_vmem=5153960755,node_type=40core-192G -pe ib-edr-part-* 80:0.000000:NONE:3690496.000000:0:0";
+
+        let file_string = String::from(file.path().to_str().unwrap());
+
+        assert_eq!(right_line.to_string(), find_line(file_string, 66).unwrap());
+    }
+
+    #[test]
+    fn test_skip_hash_line() {
+        let mut file = NamedTempFile::new().unwrap();
+        writeln!(file, "#").unwrap();
+
+        let right_line = "";
+
+        let file_string = String::from(file.path().to_str().unwrap());
+
+        assert_eq!(right_line.to_string(), find_line(file_string, 66).unwrap());
+    }
+}
