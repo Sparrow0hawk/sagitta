@@ -212,7 +212,7 @@ impl JobInfo {
             io: f[38].parse().unwrap(),
             category: f[39].to_string(),
             iow: f[40].parse().unwrap(),
-            pe_taskid: f[42].to_string(),
+            pe_taskid: f[41].to_string(),
             maxvmem: f[42].parse().unwrap(),
             arid: f[43].parse().unwrap(),
             ar_submission_time: f[44].parse().unwrap(),
