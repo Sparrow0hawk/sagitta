@@ -4,6 +4,25 @@ use std::{fmt, fs::File, io, path::Path};
 
 use chrono::NaiveDateTime;
 
+/// Finds a line based on ID column within file
+///
+/// SGE accounting files as colon separated with the job ID as the 5th item
+/// we want to retrieve the whole line based on this ID
+///
+/// # Examples
+/// ```rust
+/// use std::io::Write;
+/// use tempfile::NamedTempFile;
+/// use sagitta::{find_line};
+///
+/// let mut file = NamedTempFile::new().unwrap();
+/// writeln!(file, "test:one:big:thing:mem:1:20\ntest:two:job:thing:mem:2:100\ntest:three:job:thing:mem:3:234").unwrap();
+///
+/// let line = "test:two:job:thing:mem:2:100";
+/// let file_path = String::from(file.path().to_str().unwrap());
+///
+/// assert_eq!(line.to_string(), find_line(file_path, 2).unwrap());
+/// ```
 pub fn find_line(f: String, id: i32) -> Result<String, anyhow::Error> {
     let open_file = read_file(&f)?;
 
@@ -220,6 +239,10 @@ impl JobInfo {
     }
 }
 
+/// read a file and return a buffer
+///
+/// taken from https://doc.rust-lang.org/rust-by-example/std_misc/file/read_lines.html
+///
 pub fn read_file<P>(filename: P) -> io::Result<io::BufReader<File>>
 where
     P: AsRef<Path>,
