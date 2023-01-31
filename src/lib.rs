@@ -1,4 +1,5 @@
 use anyhow;
+use rev_buf_reader::RevBufReader;
 use std::io::BufRead;
 use std::{fmt, fs::File, io, path::Path};
 
@@ -242,12 +243,12 @@ impl JobInfo {
 ///
 /// taken from https://doc.rust-lang.org/rust-by-example/std_misc/file/read_lines.html
 ///
-pub fn read_file<P>(filename: P) -> io::Result<io::BufReader<File>>
+pub fn read_file<P>(filename: P) -> io::Result<RevBufReader<File>>
 where
     P: AsRef<Path>,
 {
     let file = File::open(filename)?;
-    Ok(io::BufReader::new(file))
+    Ok(RevBufReader::new(file))
 }
 
 #[cfg(test)]
