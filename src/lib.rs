@@ -30,8 +30,8 @@ pub fn find_line(f: String, id: i32) -> Result<String, anyhow::Error> {
         .lines()
         .map(|l| l.unwrap())
         .filter(|x| !x.starts_with("#"))
-        .filter(|x| x.split(":").nth(5).unwrap().parse::<i32>().unwrap().eq(&id))
-        .collect();
+        .find(|x| x.split(":").nth(5).unwrap().parse::<i32>().unwrap().eq(&id))
+        .unwrap();
 
     Ok(line)
 }
