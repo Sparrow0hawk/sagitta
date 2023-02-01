@@ -21,17 +21,16 @@ use chrono::NaiveDateTime;
 /// let line = "test:two:job:thing:mem:2:100";
 /// let file_path = String::from(file.path().to_str().unwrap());
 ///
-/// assert_eq!(line.to_string(), find_line(file_path, 2).unwrap());
+/// assert_eq!(Some(line.to_string()), find_line(file_path, 2).unwrap());
 /// ```
-pub fn find_line(f: String, id: i32) -> Result<String, anyhow::Error> {
+pub fn find_line(f: String, id: i32) -> Result<Option<String>, anyhow::Error> {
     let open_file = read_file(&f)?;
 
-    let line: String = open_file
+    let line: Option<String> = open_file
         .lines()
         .map(|l| l.unwrap())
         .filter(|x| !x.starts_with("#"))
-        .find(|x| x.split(":").nth(5).unwrap().parse::<i32>().unwrap().eq(&id))
-        .unwrap();
+        .find(|x| x.split(":").nth(5).unwrap().parse::<i32>().unwrap().eq(&id));
 
     Ok(line)
 }
@@ -266,7 +265,10 @@ mod tests {
 
         let file_string = String::from(file.path().to_str().unwrap());
 
-        assert_eq!(right_line.to_string(), find_line(file_string, 66).unwrap());
+        assert_eq!(
+            Some(right_line.to_string()),
+            find_line(file_string, 66).unwrap()
+        );
     }
 
     #[test]
@@ -274,10 +276,8 @@ mod tests {
         let mut file = NamedTempFile::new().unwrap();
         writeln!(file, "#").unwrap();
 
-        let right_line = "";
-
         let file_string = String::from(file.path().to_str().unwrap());
 
-        assert_eq!(right_line.to_string(), find_line(file_string, 66).unwrap());
+        assert_eq!(None, find_line(file_string, 66).unwrap());
     }
 }

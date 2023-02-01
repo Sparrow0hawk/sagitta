@@ -38,10 +38,9 @@ fn main() -> Result<(), anyhow::Error> {
 
     let line = find_line(args.file, args.job_id)?;
 
-    if line.len() > 0 {
-        println!("{}", JobInfo::new(line.split(":").collect::<Vec<&str>>()));
-    } else {
-        println!("No job with ID {}", args.job_id);
+    match line {
+        Some(line) => println!("{}", JobInfo::new(line.split(":").collect::<Vec<&str>>())),
+        _ => println!("No job with ID {}", args.job_id),
     }
 
     Ok(())
