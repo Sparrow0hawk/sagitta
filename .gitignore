@@ -1,2 +1,5 @@
 /target
-mock_data
+mock_data*
+
+venv
+*.log
