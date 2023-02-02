@@ -204,6 +204,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "memchr"
+version = "2.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2dffe52ecf27772e601905b7522cb4ef790d2cc203488bbd0e2fe85fcb74566d"
+
+[[package]]
 name = "num-integer"
 version = "0.1.45"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -265,12 +271,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "rev_buf_reader"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8c0f2e47e00e29920959826e2e1784728a3780d1a784247be5257258cc75f910"
+dependencies = [
+ "memchr",
+]
+
+[[package]]
 name = "sagitta"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "chrono",
  "lexopt",
+ "rev_buf_reader",
  "tempfile",
 ]
 
