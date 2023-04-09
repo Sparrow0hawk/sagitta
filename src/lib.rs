@@ -1,6 +1,6 @@
 use anyhow;
 use rev_buf_reader::RevBufReader;
-use std::io::BufRead;
+use std::io::{BufRead, BufReader};
 use std::{fmt, fs::File, io, path::Path};
 
 use chrono::NaiveDateTime;
@@ -285,6 +285,14 @@ where
 {
     let file = File::open(filename)?;
     Ok(RevBufReader::new(file))
+}
+
+pub fn read_file<P>(filename: P) -> io::Result<BufReader<File>>
+where
+    P: AsRef<Path>,
+{
+    let file = File::open(filename)?;
+    Ok(BufReader::new(file))
 }
 
 #[cfg(test)]
