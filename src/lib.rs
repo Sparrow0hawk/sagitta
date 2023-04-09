@@ -279,7 +279,7 @@ impl JobInfo {
 ///
 /// taken from https://doc.rust-lang.org/rust-by-example/std_misc/file/read_lines.html
 ///
-pub fn read_file<P>(filename: P) -> io::Result<RevBufReader<File>>
+pub fn read_file_rev<P>(filename: P) -> io::Result<RevBufReader<File>>
 where
     P: AsRef<Path>,
 {
