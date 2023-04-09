@@ -40,14 +40,13 @@ fn parse_args() -> Result<Args, lexopt::Error> {
 fn main() -> Result<(), anyhow::Error> {
     let args = parse_args()?;
 
-    let line = Seeker::new(args.file, args.job_id)
+    let line: Option<String> = Seeker::new(args.file, args.job_id)
         .forward(args.forward)
-        .run()?;
+        .run();
 
-    if line.len() > 0 {
-        println!("{}", JobInfo::new(line.split(':').collect::<Vec<&str>>()))
-    } else {
-        println!("No job with ID {}", args.job_id)
+    match line {
+        Some(line) => println!("{}", JobInfo::new(line.split(':').collect::<Vec<&str>>())),
+        _ => println!("No job with ID {}", args.job_id),
     }
 
     Ok(())
