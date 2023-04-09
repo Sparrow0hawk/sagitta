@@ -60,14 +60,13 @@ impl Seeker {
 ///
 /// assert_eq!(Some(line.to_string()), find_line(file_path, 2).unwrap());
 /// ```
-pub fn find_line(f: String, id: i32) -> Result<Option<String>, anyhow::Error> {
-    let open_file = read_file(&f)?;
-
-    let line: Option<String> = open_file
+pub fn find_line<F: BufRead>(open_file: F, id: i32) -> Result<String, anyhow::Error> {
+    let line: String = open_file
         .lines()
         .map(|l| l.unwrap())
-        .filter(|x| !x.starts_with("#"))
-        .find(|x| x.split(":").nth(5).unwrap().parse::<i32>().unwrap().eq(&id));
+        .filter(|x| !x.starts_with('#'))
+        .find(|x| x.split(':').nth(5).unwrap().parse::<i32>().unwrap().eq(&id))
+        .unwrap();
 
     Ok(line)
 }
