@@ -311,7 +311,7 @@ mod tests {
 
         assert_eq!(
             Some(right_line.to_string()),
-            find_line(file_string, 66).unwrap()
+            find_line(read_file(file_string).unwrap(), 66)
         );
     }
 
@@ -322,6 +322,6 @@ mod tests {
 
         let file_string = String::from(file.path().to_str().unwrap());
 
-        assert_eq!(None, find_line(file_string, 66).unwrap());
+        assert_eq!(None, find_line(read_file_rev(file_string).unwrap(), 66));
     }
 }
