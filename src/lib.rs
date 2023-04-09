@@ -50,25 +50,23 @@ impl Seeker {
 /// ```rust
 /// use std::io::Write;
 /// use tempfile::NamedTempFile;
-/// use sagitta::{find_line};
+/// use sagitta::{find_line, read_file};
 ///
 /// let mut file = NamedTempFile::new().unwrap();
 /// writeln!(file, "test:one:big:thing:mem:1:20\ntest:two:job:thing:mem:2:100\ntest:three:job:thing:mem:3:234").unwrap();
 ///
 /// let line = "test:two:job:thing:mem:2:100";
 /// let file_path = String::from(file.path().to_str().unwrap());
+/// let open_file = read_file(file_path).unwrap();
 ///
-/// assert_eq!(Some(line.to_string()), find_line(file_path, 2).unwrap());
+/// assert_eq!(Some(line.to_string()), find_line(open_file, 2));
 /// ```
-pub fn find_line<F: BufRead>(open_file: F, id: i32) -> Result<String, anyhow::Error> {
-    let line: String = open_file
+pub fn find_line<F: BufRead>(open_file: F, id: i32) -> Option<String> {
+    open_file
         .lines()
         .map(|l| l.unwrap())
         .filter(|x| !x.starts_with('#'))
         .find(|x| x.split(':').nth(5).unwrap().parse::<i32>().unwrap().eq(&id))
-        .unwrap();
-
-    Ok(line)
 }
 
 #[derive(Debug)]
