@@ -26,18 +26,20 @@ impl Seeker {
         self
     }
 
-    pub fn run(&self) -> Result<String, anyhow::Error> {
+    pub fn run(&self) -> Option<String> {
         let file = self.file.clone();
         let id = self.id;
         let forward = self.forward;
 
-        if forward {
-            let open_file = read_file(&file)?;
+        let line = if forward {
+            let open_file = read_file(&file).ok()?;
             find_line(open_file, id)
         } else {
-            let open_file = read_file_rev(&file)?;
+            let open_file = read_file_rev(&file).ok()?;
             find_line(open_file, id)
-        }
+        };
+
+        line
     }
 }
 
