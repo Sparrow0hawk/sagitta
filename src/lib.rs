@@ -5,6 +5,42 @@ use std::{fmt, fs::File, io, path::Path};
 
 use chrono::NaiveDateTime;
 
+pub struct Seeker {
+    file: String,
+    id: i32,
+    // to search forward or backward through file
+    forward: bool,
+}
+
+impl Seeker {
+    pub fn new(file: String, id: i32) -> Self {
+        Seeker {
+            file,
+            id,
+            forward: false,
+        }
+    }
+
+    pub fn forward(&mut self, arg: bool) -> &mut Self {
+        self.forward = arg;
+        self
+    }
+
+    pub fn run(&self) -> Result<String, anyhow::Error> {
+        let file = self.file.clone();
+        let id = self.id;
+        let forward = self.forward;
+
+        if forward {
+            let open_file = read_file(&file)?;
+            find_line(open_file, id)
+        } else {
+            let open_file = read_file_rev(&file)?;
+            find_line(open_file, id)
+        }
+    }
+}
+
 /// Finds a line based on ID column within file
 ///
 /// SGE accounting files as colon separated with the job ID as the 5th item
