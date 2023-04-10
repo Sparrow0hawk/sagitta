@@ -1,4 +1,3 @@
-use anyhow;
 use rev_buf_reader::RevBufReader;
 use std::io::{BufRead, BufReader};
 use std::{fmt, fs::File, io, path::Path};
