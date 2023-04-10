@@ -23,7 +23,7 @@ fn parse_args() -> Result<Args, lexopt::Error> {
             }
             Short('f') | Long("forward") => forward = true,
             Long("help") => {
-                println!("Usage: sagitta [-j|--job-id=JOB_ID] FILE");
+                println!("Usage: sagitta [-j|--job-id=JOB_ID] [-f|--forward] FILE");
                 std::process::exit(0);
             }
             _ => return Err(arg.unexpected()),
