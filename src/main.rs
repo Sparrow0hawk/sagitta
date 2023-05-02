@@ -1,8 +1,9 @@
-use sagitta::{find_line, JobInfo};
+use sagitta::{JobInfo, Seeker};
 
 struct Args {
     file: String,
     job_id: i32,
+    forward: bool,
 }
 
 fn parse_args() -> Result<Args, lexopt::Error> {
@@ -11,6 +12,7 @@ fn parse_args() -> Result<Args, lexopt::Error> {
     let mut file = None;
     let mut job_id = 1;
     let mut parser = lexopt::Parser::from_env();
+    let mut forward = false;
     while let Some(arg) = parser.next()? {
         match arg {
             Short('j') | Long("job-id") => {
@@ -19,8 +21,9 @@ fn parse_args() -> Result<Args, lexopt::Error> {
             Value(val) if file.is_none() => {
                 file = Some(val.into_string()?);
             }
+            Short('f') | Long("forward") => forward = true,
             Long("help") => {
-                println!("Usage: sagitta [-j|--job-id=JOB_ID] FILE");
+                println!("Usage: sagitta [-j|--job-id=JOB_ID] [-f|--forward] FILE");
                 std::process::exit(0);
             }
             _ => return Err(arg.unexpected()),
@@ -30,16 +33,19 @@ fn parse_args() -> Result<Args, lexopt::Error> {
     Ok(Args {
         file: file.ok_or("missing argument FILE")?,
         job_id,
+        forward,
     })
 }
 
 fn main() -> Result<(), anyhow::Error> {
     let args = parse_args()?;
 
-    let line = find_line(args.file, args.job_id)?;
+    let line: Option<String> = Seeker::new(args.file, args.job_id)
+        .forward(args.forward)
+        .run();
 
     match line {
-        Some(line) => println!("{}", JobInfo::new(line.split(":").collect::<Vec<&str>>())),
+        Some(line) => println!("{}", JobInfo::new(line.split(':').collect::<Vec<&str>>())),
         _ => println!("No job with ID {}", args.job_id),
     }
 

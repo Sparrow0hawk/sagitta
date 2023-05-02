@@ -1,5 +1,7 @@
 # Sagitta
 
+> :warning: This is a test project as part of me learning Rust. Don't expect it to be perfect!
+
 A Rust CLI tool for retrieving job information from SGE accounting files.
 
 ## Setup
@@ -25,7 +27,7 @@ You can use `sagitta` to return job information from the SGE accounting file by 
 
 ```bash
 $ sagitta --help
-Usage: sagitta [-j|--job-id=JOB_ID] FILE
+Usage: sagitta [-j|--job-id=JOB_ID] [-f|--forward] FILE
 ```
 
 ```bash

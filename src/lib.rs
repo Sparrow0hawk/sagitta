@@ -1,9 +1,46 @@
-use anyhow;
 use rev_buf_reader::RevBufReader;
-use std::io::BufRead;
+use std::io::{BufRead, BufReader};
 use std::{fmt, fs::File, io, path::Path};
 
 use chrono::NaiveDateTime;
+
+pub struct Seeker {
+    file: String,
+    id: i32,
+    // to search forward or backward through file
+    forward: bool,
+}
+
+impl Seeker {
+    pub fn new(file: String, id: i32) -> Self {
+        Seeker {
+            file,
+            id,
+            forward: false,
+        }
+    }
+
+    pub fn forward(&mut self, arg: bool) -> &mut Self {
+        self.forward = arg;
+        self
+    }
+
+    pub fn run(&self) -> Option<String> {
+        let file = self.file.clone();
+        let id = self.id;
+        let forward = self.forward;
+
+        let line = if forward {
+            let open_file = read_file(&file).ok()?;
+            find_line(open_file, id)
+        } else {
+            let open_file = read_file_rev(&file).ok()?;
+            find_line(open_file, id)
+        };
+
+        line
+    }
+}
 
 /// Finds a line based on ID column within file
 ///
@@ -14,26 +51,23 @@ use chrono::NaiveDateTime;
 /// ```rust
 /// use std::io::Write;
 /// use tempfile::NamedTempFile;
-/// use sagitta::{find_line};
+/// use sagitta::{find_line, read_file};
 ///
 /// let mut file = NamedTempFile::new().unwrap();
 /// writeln!(file, "test:one:big:thing:mem:1:20\ntest:two:job:thing:mem:2:100\ntest:three:job:thing:mem:3:234").unwrap();
 ///
 /// let line = "test:two:job:thing:mem:2:100";
 /// let file_path = String::from(file.path().to_str().unwrap());
+/// let open_file = read_file(file_path).unwrap();
 ///
-/// assert_eq!(Some(line.to_string()), find_line(file_path, 2).unwrap());
+/// assert_eq!(Some(line.to_string()), find_line(open_file, 2));
 /// ```
-pub fn find_line(f: String, id: i32) -> Result<Option<String>, anyhow::Error> {
-    let open_file = read_file(&f)?;
-
-    let line: Option<String> = open_file
+pub fn find_line<F: BufRead>(open_file: F, id: i32) -> Option<String> {
+    open_file
         .lines()
         .map(|l| l.unwrap())
-        .filter(|x| !x.starts_with("#"))
-        .find(|x| x.split(":").nth(5).unwrap().parse::<i32>().unwrap().eq(&id));
-
-    Ok(line)
+        .filter(|x| !x.starts_with('#'))
+        .find(|x| x.split(':').nth(5).unwrap().parse::<i32>().unwrap().eq(&id))
 }
 
 #[derive(Debug)]
@@ -243,12 +277,20 @@ impl JobInfo {
 ///
 /// taken from https://doc.rust-lang.org/rust-by-example/std_misc/file/read_lines.html
 ///
-pub fn read_file<P>(filename: P) -> io::Result<RevBufReader<File>>
+pub fn read_file_rev<P>(filename: P) -> io::Result<RevBufReader<File>>
 where
     P: AsRef<Path>,
 {
     let file = File::open(filename)?;
     Ok(RevBufReader::new(file))
+}
+
+pub fn read_file<P>(filename: P) -> io::Result<BufReader<File>>
+where
+    P: AsRef<Path>,
+{
+    let file = File::open(filename)?;
+    Ok(BufReader::new(file))
 }
 
 #[cfg(test)]
@@ -268,7 +310,7 @@ mod tests {
 
         assert_eq!(
             Some(right_line.to_string()),
-            find_line(file_string, 66).unwrap()
+            find_line(read_file(file_string).unwrap(), 66)
         );
     }
 
@@ -279,6 +321,6 @@ mod tests {
 
         let file_string = String::from(file.path().to_str().unwrap());
 
-        assert_eq!(None, find_line(file_string, 66).unwrap());
+        assert_eq!(None, find_line(read_file_rev(file_string).unwrap(), 66));
     }
 }
